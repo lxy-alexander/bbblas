@@ -1,0 +1,255 @@
+(kernelturbo) [xli49@ghpc005 test3]$ nvcc -o test_kblas_dgemv test_kblas_dgemv.cu -lcublas
+(kernelturbo) [xli49@ghpc005 test3]$ ./test_kblas_dgemv 
+Warming up cuBLAS...
+Benchmarking cuBLAS DGEMV...
+Warming up custom kernel...
+Benchmarking custom GEMV kernel...
+
+=== Performance Results ===
+Matrix size: 4096x4096
+Vector size: 4096
+
+Timing Results (average of 20 runs):
+cuBLAS DGEMV:    0.248627 ms
+Custom kernel:   0.228421 ms
+
+Speedup: 1.08846x (Custom kernel is faster)
+
+Verification:
+Maximum error between results: 4.9738e-14
+✓ Results match (within numerical precision)
+
+
+
+(kernelturbo) [xli49@ghpc005 test3]$ nvcc -arch=sm_86 -o test_kblas_symv test_kblas_symv.cu -lcublas
+test_kblas_symv.cu(488): warning #177-D: variable "uplo" was declared but never referenced
+      char uplo = 'L';
+           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+(kernelturbo) [xli49@ghpc005 test3]$ ./test_kblas_symv
+Warming up cuBLAS...
+Benchmarking cuBLAS dsymv...
+Warming up custom kernel...
+Benchmarking custom symv kernel...
+
+Debug - First 10 elements comparison:
+Index	cuBLAS		Custom		Diff
+0	1.471214e-01	1.471214e-01	1.776357e-15
+1	1.262264e+01	1.262264e+01	3.552714e-15
+2	6.566952e+00	6.566952e+00	5.329071e-15
+3	2.900255e+01	2.900255e+01	0.000000e+00
+4	2.568975e+01	2.568975e+01	1.421085e-14
+5	-9.030531e+00	-9.030531e+00	1.065814e-14
+6	1.467738e+01	1.467738e+01	5.329071e-15
+7	5.520829e+00	5.520829e+00	3.552714e-15
+8	-8.641964e+00	-8.641964e+00	0.000000e+00
+9	3.774286e+01	3.774286e+01	0.000000e+00
+
+=== Performance Results ===
+Matrix size: 4099x4099
+
+Timing Results (average of 20 runs):
+cuBLAS dsymv:     0.234035 ms
+Custom kernel:    0.175002 ms
+
+Speedup: 1.33733x (Custom kernel is faster)
+
+Verification:
+Maximum error between results: 4.26326e-14 (at index 2895)
+✓ Results match (within numerical precision)
+
+
+(kernelturbo) [xli49@ghpc005 test3]$ nvcc -arch=sm_86 -o test_kblas_symv_special test_kblas_symv_special.cu -lcublas
+(kernelturbo) [xli49@ghpc005 test3]$ ./test_kblas_symv_special
+Kernel configuration:
+Block size (SYHEMV_BS): 64
+Thread block: 64x1
+Grid size for diagonal: 64
+Grid size for non-diagonal: 64x4
+
+Warming up cuBLAS...
+Benchmarking cuBLAS cublasSsymv...
+Warming up custom kernel...
+Benchmarking custom syhemvl_special kernels...
+
+=== Performance Results ===
+Matrix size: 4096x4096
+Vector size: 4096
+
+Timing Results (average of 20 runs):
+cuBLAS cublasSsymv:    0.169168 ms
+Custom kernel:   0.013962 ms
+
+Speedup: 12.116665x (Custom kernel is faster)
+
+Verification:
+Maximum error between results: 0.000000e+00
+✓ Results match (within numerical precision)
+
+
+========================================
+
+
+
+(kernelturbo) [xli49@ghpc007 test3]$ nvcc -arch=sm_90 -o test_kblas_trmm test_kblas_trmm.cu -lcublas
+(kernelturbo) [xli49@ghpc007 test3]$ ./test_kblas_trmm
+h_A is NOT 32-byte aligned on host
+
+Top-left 10x10 block of matrix:
+   1.585        0        0        0        0        0        0        0        0        0 
+ -0.7688    1.148        0        0        0        0        0        0        0        0 
+  0.8531  -0.6024    1.566        0        0        0        0        0        0        0 
+  0.9984   0.3438 -0.07737    1.488        0        0        0        0        0        0 
+  0.9792   -0.639  -0.7416   0.5321    1.546        0        0        0        0        0 
+  0.7472 -0.08629    0.254  -0.5147  -0.1343    1.618        0        0        0        0 
+-0.05495  -0.9772   0.1093  -0.4795   0.2802  -0.5618    1.707        0        0        0 
+ -0.1427  -0.6832   0.6041  -0.3146  -0.7309  0.04111  -0.2861    1.074        0        0 
+  0.9588   0.8841   0.1835  0.09206  -0.5815   0.7001   0.9284  0.08571    1.297        0 
+ -0.3277  -0.6449  -0.9524  -0.1143   -0.646   0.7925    0.974   0.5117  -0.7479    1.332 
+
+Warming up cuBLAS...
+Benchmarking cuBLAS TRMM...
+Warming up custom kernel...
+func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0Benchmarking custom TRMM kernel...
+func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0
+=== Performance Results ===
+Matrix size: 4096x4096
+
+Timing Results (average of 20 runs):
+cuBLAS TRMM:      2.368970 ms
+Custom kernel:    13.700488 ms
+
+Speedup: 0.17291x (cuBLAS is faster)
+
+Verification:
+diff:-0.218327 -0.218327 0.000000
+diff:1.081658 1.081658 0.000000
+diff:-1.127125 -1.127125 0.000000
+diff:0.014698 0.014698 0.000000
+diff:-1.355676 -1.355676 0.000000
+diff:-0.094518 -0.094518 0.000000
+diff:-1.172798 -1.172798 0.000000
+diff:0.783541 0.783541 0.000000
+diff:-0.994217 -0.994217 0.000000
+diff:-1.110875 -1.110875 0.000000
+diff:-1.184111 -1.184111 0.000000
+diff:0.866076 0.866076 0.000000
+diff:1.577721 1.577721 0.000000
+diff:-0.399969 -0.399969 0.000000
+diff:-1.040478 -1.040478 0.000000
+diff:-0.366777 -0.366777 0.000000
+diff:0.222850 0.222850 0.000000
+diff:-0.241674 -0.241674 0.000000
+diff:-1.266449 -1.266449 0.000000
+diff:0.666980 0.666980 0.000000
+diff:0.351007 0.351007 0.000000
+diff:-0.617835 -0.617835 0.000000
+diff:-0.161245 -0.161245 0.000000
+diff:1.567885 1.567885 0.000000
+diff:1.762670 1.762670 0.000000
+diff:-0.305997 -0.305997 0.000000
+diff:-0.621295 -0.621295 0.000000
+diff:1.225535 1.225535 0.000000
+diff:-0.888165 -0.888165 0.000000
+diff:0.534273 0.534273 0.000000
+diff:-1.540508 -1.540508 0.000000
+diff:-0.249514 -0.249514 0.000000
+diff:-0.535344 -0.535344 0.000000
+diff:-0.990686 -0.990686 0.000000
+diff:-0.345170 -0.345170 0.000000
+diff:1.335308 1.335308 0.000000
+diff:0.525263 0.525263 0.000000
+diff:1.037238 1.037238 0.000000
+diff:0.468612 0.468612 0.000000
+diff:-1.272089 -1.272089 0.000000
+diff:0.000357 0.000357 0.000000
+diff:-0.192225 -0.192225 0.000000
+diff:0.457206 0.457206 0.000000
+diff:0.082320 0.082320 0.000000
+diff:0.474953 0.474953 0.000000
+diff:0.461421 0.461421 0.000000
+diff:-1.025963 -1.025963 0.000000
+diff:1.085509 1.085509 0.000000
+diff:1.236060 1.236060 0.000000
+diff:0.956166 0.956166 0.000000
+diff:-0.146127 -0.146127 0.000000
+diff:1.847698 1.847698 0.000000
+diff:0.867816 0.867816 0.000000
+diff:-1.614587 -1.614587 0.000000
+diff:0.556740 0.556740 0.000000
+diff:0.437072 0.437072 0.000000
+diff:1.055699 1.055699 0.000000
+diff:0.964244 0.964244 0.000000
+diff:-0.554119 -0.554119 0.000000
+diff:0.068839 0.068839 0.000000
+diff:-0.008674 -0.008674 0.000000
+diff:-1.814899 -1.814899 0.000000
+diff:1.458688 1.458688 0.000000
+diff:-1.451759 -1.451759 0.000000
+diff:0.795478 0.795478 0.000000
+diff:0.403868 0.403868 0.000000
+diff:0.041079 0.041079 0.000000
+diff:0.238944 0.238944 0.000000
+diff:0.683462 0.683462 0.000000
+diff:1.153654 1.153654 0.000000
+diff:-0.687316 -0.687316 0.000000
+diff:0.611201 0.611201 0.000000
+diff:0.912242 0.912242 0.000000
+diff:0.967294 0.967294 0.000000
+diff:0.589358 0.589358 0.000000
+diff:1.443995 1.443995 0.000000
+diff:1.580070 1.580070 0.000000
+diff:1.563513 1.563513 0.000000
+diff:0.510585 0.510585 0.000000
+diff:0.427104 0.427104 0.000000
+diff:-1.102573 -1.102573 0.000000
+diff:0.473978 0.473978 0.000000
+diff:1.029238 1.029238 0.000000
+diff:-1.276470 -1.276470 0.000000
+diff:0.301049 0.301049 0.000000
+diff:0.608929 0.608929 0.000000
+diff:0.127048 0.127048 0.000000
+diff:-1.758267 -1.758267 0.000000
+diff:-0.561498 -0.561498 0.000000
+diff:-0.447021 -0.447021 0.000000
+diff:0.423746 0.423746 0.000000
+diff:-0.686846 -0.686846 0.000000
+diff:-1.491210 -1.491210 0.000000
+diff:-1.070866 -1.070866 0.000000
+diff:0.426031 0.426031 0.000000
+diff:-0.175508 -0.175508 0.000000
+diff:0.855607 0.855607 0.000000
+diff:-1.288298 -1.288298 0.000000
+diff:0.947526 0.947526 0.000000
+diff:0.819444 0.819444 0.000000
+Maximum error between results: 0.00000
+✓ Results match (within numerical precision)
+
+
+
+Warming up cuBLAS...
+Benchmarking cuBLAS TRMM...
+Warming up custom kernel...
+func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0Benchmarking custom TRMM kernel...
+func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0func_idx: 0
+=== Performance Results ===
+Matrix size: 4096x4096
+
+Timing Results (average of 20 runs):
+cuBLAS TRMM:      2.368970 ms
+Custom kernel:    13.700488 ms
+
+Speedup: 0.17291x (cuBLAS is faster)
+
+
+(kernelturbo) [xli49@ghpc007 test3]$ nvcc -arch=sm_90 -o test_kblas_syrk test_kblas_syrk.cu -lcublas
+(kernelturbo) [xli49@ghpc007 test3]$ ./test_kblas_syrk
+=== Performance Results ===
+Matrix size: 64x64 batch=512
+cuBLAS Dsyrk: 2.417642 ms (looped)
+Custom kernel: 0.082763 ms
+Speedup: 29.2116x
+Max abs err: 3.222e+01  Max rel err: 3.493e+05
+✗ Mismatch
